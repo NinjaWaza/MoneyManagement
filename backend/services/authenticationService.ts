@@ -36,7 +36,21 @@ export function IsUserConnected(req: Request) {
         if (user != undefined) {
             return true;
         }
+    } catch {
+        return false;
+    }
+}
 
+export function IsUserConnectedCheckViaToken(token: string | undefined) {
+
+    if (!token) {
+        return false;
+    }
+    try {
+        let user = verifyToken(token);
+        if (user != undefined) {
+            return true;
+        }
     } catch {
         return false;
     }
@@ -129,7 +143,7 @@ export function logoutUser() {
         status: 200,
         headers: {
             'Content-Type': 'application/json',
-            'Set-Cookie': expiredCookie,
+            'Set-Cookie': expiredCookie
         },
     })
 }

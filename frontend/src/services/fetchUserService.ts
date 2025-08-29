@@ -16,7 +16,7 @@ async function fetchUser(): Promise<User> {
   //if (!token) throw new Error('Not authenticated');
 
   console.log("Let's call the backend with cookies")
-  const res = await fetch('http://localhost:3000/api/user', {
+  const res = await fetch('https://localhost:3000/api/user', {
     method: 'GET',
     credentials: 'include', // Include cookies in the request
   })
@@ -34,7 +34,7 @@ async function fetchUser(): Promise<User> {
 async function fetchUsers(): Promise<[User]> {
   //if (!token) throw new Error('Not authenticated');
 
-  const res = await fetch('http://localhost:3000/api/users', {
+  const res = await fetch('https://localhost:3000/api/users', {
     credentials: 'include', // Include cookies in the request
   })
   if (!res.ok) throw new Error('Failed to fetch users')

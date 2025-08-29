@@ -7,7 +7,7 @@ export class ApiController {
 
   handle(path: string, method: string): Response | undefined {
     if (!this.user) {
-      return new Response('Unauthorized', { status: 401 });
+      return new Response(JSON.stringify('Unauthorized'), { status: 401 });
     }
 
     if (path === '/api/user' && method === 'GET') {

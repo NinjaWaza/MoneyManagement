@@ -10,7 +10,7 @@ export function TransactionService() {
 
 async function fetchTransactions(): Promise<Transaction[]> {
   console.log("Let's call the backend with cookies")
-  const res = await fetch('http://localhost:3000/api/transactions', {
+  const res = await fetch('https://localhost:3000/api/transactions', {
     method: 'GET',
     credentials: 'include', // Include cookies in the request
   })

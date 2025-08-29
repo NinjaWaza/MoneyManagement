@@ -14,7 +14,7 @@ export function authenticationService() {
 async function logout() {
   const store = userStore()
 
-  const res = await fetch('http://localhost:3000/logout', {
+  const res = await fetch('https://localhost:3000/logout', {
     method: 'POST',
     credentials: 'include',
   })
@@ -31,7 +31,7 @@ async function logout() {
 }
 
 async function submitLogin(username: string, password: string): Promise<Response> {
-  return await fetch('http://localhost:3000/login', {
+  return await fetch('https://localhost:3000/login', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -40,7 +40,7 @@ async function submitLogin(username: string, password: string): Promise<Response
 }
 
 async function checkIfUserIsConnected(): Promise<Response> {
-  return await fetch('http://localhost:3000/isUserConnected', {
+  return await fetch('https://localhost:3000/isUserConnected', {
     method: 'GET',
     credentials: 'include',
   })

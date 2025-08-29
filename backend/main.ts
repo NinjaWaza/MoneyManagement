@@ -1,9 +1,9 @@
 // backend/src/main.ts
 import { serve } from 'bun';
-import { verifyToken, getTokenFromCookie, loginUser, IsUserConnected } from './services/authenticationService';
+import { verifyToken, getTokenFromCookie, loginUser, IsUserConnected, IsUserConnectedCheckViaToken, logoutUser } from './services/authenticationService';
 import { handleRoutes } from './routes/routes';
 import type { User } from 'shared/models/User';
-import { withCorsHeaders } from 'utils/cors';
+import { embedSecurityHeaders } from 'utils/cors';
 
 const server = serve({
   port: 3000,
@@ -11,35 +11,45 @@ const server = serve({
     const url = new URL(req.url);
 
     console.log("➡️ Incoming request:", req.method, url.pathname);
+    const token = getTokenFromCookie(req);
+
+    let response: Response | undefined = new Response(JSON.stringify('Not Found'), { status: 404 });
+
+    if (req.method === 'OPTIONS') {
+      response = new Response(null, { status: 204 });
+    }
+
+    if (url.pathname === '/logout' && req.method === 'POST') {
+      response = logoutUser();
+    }
 
     if (url.pathname === '/login' && req.method === 'POST') {
-      return loginUser(req)
-    }
-
-    if (url.pathname === '/isUserConnected' && req.method === 'GET') {
-      if (IsUserConnected(req)) {
-        return withCorsHeaders(Response.json(true));
+      response = await loginUser(req)
+    } else if (url.pathname === '/isUserConnected' && req.method === 'GET') {
+      if (IsUserConnectedCheckViaToken(token)) {
+        response = Response.json(true);
       } else {
-        return withCorsHeaders(Response.json(false));
+        response = Response.json(false);
+      }
+    } else if (token) {
+      try {
+        const authenticatedUser: User = verifyToken(token);
+
+        let responseFromHandler = handleRoutes(req, authenticatedUser);
+
+        if (responseFromHandler) {
+          response = responseFromHandler;
+        }
+      } catch {
+        response = new Response(JSON.stringify('Unauthorized'), { status: 401 });
       }
     }
 
-    const token = getTokenFromCookie(req);
-    if (!token) return new Response('Unauthorized', { status: 401 });
-
-    try {
-      const authenticatedUser: User = verifyToken(token);
-
-      let response = handleRoutes(req, authenticatedUser);
-
-      if (response === undefined) {
-        return new Response('Not Found', { status: 404 });
-      }
-
-      return response;
-    } catch {
-      return new Response('Unauthorized', { status: 401 });
-    }
+    return embedSecurityHeaders(response);
+  },
+  tls: {
+    cert: Bun.file('./certificate/backend.crt'),
+    key: Bun.file('./certificate/backend.key'),
   },
 });
 
