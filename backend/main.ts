@@ -13,7 +13,7 @@ const server = serve({
     console.log("➡️ Incoming request:", req.method, url.pathname);
     const token = getTokenFromCookie(req);
 
-    let response: Response | undefined = new Response(JSON.stringify('Not Found'), { status: 404 });
+    let response: Response = new Response(JSON.stringify('Not Found'), { status: 404 });
 
     if (req.method === 'OPTIONS') {
       response = new Response(null, { status: 204 });

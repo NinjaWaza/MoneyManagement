@@ -1,8 +1,14 @@
 export function embedSecurityHeaders(response: Response, origin = 'http://localhost:5173'): Response {
-  const headers = new Headers(response.headers);
+  let headers;
 
-  headers.set('Access-Control-Allow-Origin', origin);
-  headers.set('Access-Control-Allow-Credentials', 'true');
+  if (response.headers != undefined) {
+    headers = new Headers(response.headers);
+  } else {
+    headers = new Headers();
+  }
+
+  //headers.set('Access-Control-Allow-Origin', origin);
+  //headers.set('Access-Control-Allow-Credentials', 'true');
   headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 

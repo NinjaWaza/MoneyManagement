@@ -89,8 +89,19 @@ export function getTokenFromCookie(req: Request): string | undefined {
 }
 
 export async function loginUser(req: Request) {
-    const userProvidedCredentials: LoginBody = await req.json() as LoginBody;
-    return fetchUserByUsernameAndGenerateToken(userProvidedCredentials)
+    if (req.body != undefined) {
+        let userProvidedCredentials: LoginBody;
+        try {
+            userProvidedCredentials = await req.json() as LoginBody;
+            if (userProvidedCredentials.username === undefined || userProvidedCredentials.password === undefined) {
+                throw new Error('Username or password field is missing')
+            }
+        } catch {
+            return new Response(JSON.stringify("Body malformed"), { status: 400 });
+        }
+        return fetchUserByUsernameAndGenerateToken(userProvidedCredentials)
+    }
+    return new Response(JSON.stringify("Body is missing"), { status: 400 });
 }
 
 
